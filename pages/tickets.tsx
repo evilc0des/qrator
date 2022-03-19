@@ -23,9 +23,12 @@ type NewTicketData = {
 const Tickets: NextPage = () => {
 
   const [tickets, setTickets] = useState<Array<TicketData>>([]);
-  const [newTicket, setNewTicket] = useState<NewTicketData>({})
+  const [newTicket, setNewTicket] = useState<NewTicketData>({});
+
+  const [ isFetching, setIsFetching ] = useState(false);
 
   useEffect(() => {
+    setIsFetching(true);
     fetch(`/api/ticket`, {
       method: 'GET',
     })
@@ -33,6 +36,7 @@ const Tickets: NextPage = () => {
       .then(data => {
         console.log(data);
         setTickets(data);
+        setIsFetching(false);
       });
   }, [])
 
@@ -60,6 +64,7 @@ const Tickets: NextPage = () => {
           if(data.acknowledged) {
             setNewTicket({});
           }
+          setIsFetching(true);
           fetch(`/api/ticket`, {
             method: 'GET',
           })
@@ -67,6 +72,7 @@ const Tickets: NextPage = () => {
             .then(data => {
               console.log(data);
               setTickets(data);
+              setIsFetching(false);
             });
         });
     }
@@ -81,21 +87,25 @@ const Tickets: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        <table>
-          <tr>
-            <th className="border-r min-w-[20vw]">Booking Id</th>
-            <th className="border-r min-w-[20vw]">Seats</th>
-            <th className="border-r min-w-[20vw]">Time</th>
-            <th className="border-r min-w-[20vw]">Admitted</th>
-          </tr>
-          {tickets.map(t => <tr key={t._id}>
-            <td className="border-r text-center">{t.bookingId}</td>
-            <td className="border-r text-center">{t.seats?.join(", ")}</td>
-            <td className="border-r text-center">{t.time}</td>
-            <td className={`border-r text-center ${t.admitted ? "text-green-500": "text-red-500"}`}>{t.admitted ? 'YES' : 'NO'}</td>
-          </tr>
-          )}
-        </table>
+        {
+          isFetching
+          ? <div className="w-full flex justify-center"><div className={styles["lds-ellipsis"]}><div></div><div></div><div></div><div></div></div></div>
+          : <table>
+            <tr>
+              <th className="border-r min-w-[20vw]">Booking Id</th>
+              <th className="border-r min-w-[20vw]">Seats</th>
+              <th className="border-r min-w-[20vw]">Time</th>
+              <th className="border-r min-w-[20vw]">Admitted</th>
+            </tr>
+            {tickets.map(t => <tr key={t._id}>
+              <td className="border-r text-center">{t.bookingId}</td>
+              <td className="border-r text-center">{t.seats?.join(", ")}</td>
+              <td className="border-r text-center">{t.time}</td>
+              <td className={`border-r text-center ${t.admitted ? "text-green-500": "text-red-500"}`}>{t.admitted ? 'YES' : 'NO'}</td>
+            </tr>
+            )}
+          </table>
+        }
 
         <form className="mt-8 flex flex-col items-start p-4" onSubmit={handleSubmit}>
           <label>
