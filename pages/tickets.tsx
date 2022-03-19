@@ -78,6 +78,26 @@ const Tickets: NextPage = () => {
     }
   }
 
+  const handleDelete = (id: string) => {
+    fetch(`/api/ticket/${id}`, {
+      method: 'DELETE',
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        setIsFetching(true);
+        fetch(`/api/ticket`, {
+          method: 'GET',
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+            setTickets(data);
+            setIsFetching(false);
+          });
+      });
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -96,12 +116,14 @@ const Tickets: NextPage = () => {
               <th className="border-r min-w-[20vw]">Seats</th>
               <th className="border-r min-w-[20vw]">Time</th>
               <th className="border-r min-w-[20vw]">Admitted</th>
+              <th></th>
             </tr>
             {tickets.map(t => <tr key={t._id}>
               <td className="border-r text-center">{t.bookingId}</td>
               <td className="border-r text-center">{t.seats?.join(", ")}</td>
               <td className="border-r text-center">{t.time}</td>
               <td className={`border-r text-center ${t.admitted ? "text-green-500": "text-red-500"}`}>{t.admitted ? 'YES' : 'NO'}</td>
+              <td><button onClick={() => handleDelete(t._id)}>Delete</button></td>
             </tr>
             )}
           </table>

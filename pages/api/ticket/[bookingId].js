@@ -1,5 +1,6 @@
 import nextConnect from 'next-connect';
 import middleware from '../../../middleware/database';
+import {ObjectId} from 'mongodb'
 
 const handler = nextConnect();
 
@@ -40,6 +41,14 @@ handler.put(async (req, res) => {
         time: body.time,
         admitted: false
     });
+    console.log(doc);
+    res.json(doc);
+});
+
+handler.delete(async (req, res) => {
+    const { bookingId } = req.query
+    console.log(bookingId);
+    let doc = await req.db.collection('ticket').deleteOne({ "_id" : ObjectId(bookingId) });
     console.log(doc);
     res.json(doc);
 });
