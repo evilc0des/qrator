@@ -4,21 +4,26 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
 import QrScanner from 'qr-scanner';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { SyntheticEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 
-type QrCodeResult = {
-  data: string,
+type TicketData = {
+  bookingId?: string,
+  seats?: Array<string>,
+  time?: string,
+  _id?: string,
+  admitted?: boolean
 }
-type BookingData = {
-  id?: string,
+type NewTicketData = {
+  bookingId?: string,
+  seats?: string,
   time?: string
 }
 
 const Tickets: NextPage = () => {
 
-  const [tickets, setTickets] = useState([]);
-  const [newTicket, setNewTicket] = useState({})
+  const [tickets, setTickets] = useState<Array<TicketData>>([]);
+  const [newTicket, setNewTicket] = useState<NewTicketData>({})
 
   useEffect(() => {
     fetch(`/api/ticket`, {
@@ -31,14 +36,14 @@ const Tickets: NextPage = () => {
       });
   }, [])
 
-  const handleNewBookingChange = (label, event) => {
+  const handleNewBookingChange = (label: string, event: SyntheticEvent<HTMLInputElement>) => {
     setNewTicket({
       ...newTicket,
-      [label]: event.target.value
+      [label]: (event.target as HTMLInputElement).value
     });
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
     if(newTicket.bookingId && newTicket.seats) {
       fetch(`/api/ticket/${newTicket.bookingId}`, {
@@ -85,7 +90,7 @@ const Tickets: NextPage = () => {
           </tr>
           {tickets.map(t => <tr key={t._id}>
             <td className="border-r text-center">{t.bookingId}</td>
-            <td className="border-r text-center">{t.seats.join(", ")}</td>
+            <td className="border-r text-center">{t.seats?.join(", ")}</td>
             <td className="border-r text-center">{t.time}</td>
             <td className={`border-r text-center ${t.admitted ? "text-green-500": "text-red-500"}`}>{t.admitted ? 'YES' : 'NO'}</td>
           </tr>
