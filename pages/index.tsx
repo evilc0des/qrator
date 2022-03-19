@@ -24,11 +24,13 @@ const Home: NextPage = () => {
 
   const [ seats, setSeats ] = useState([]);
   const [ isAdmitted, setAdmitted ] = useState(false);
+  const [ notFound, setNotFound ] = useState(false);
 
   const [ isFetching, setIsFetching ] = useState(false);
 
   const handleQrCodeData = ({ data }: QrCodeResult) => {
     const dataArr = data.split(",");
+    console.log(dataArr);
     if(dataArr.length === 4) {
       const bookingId = (dataArr[0].split("-"))[0];
       const bookingTime = `${dataArr[2]}, ${dataArr[3]}`
@@ -48,6 +50,11 @@ const Home: NextPage = () => {
       })
       .then(response => response.json())
       .then(data => {
+        if(!data.bookingId) {
+          setNotFound(true);
+          setIsFetching(false);
+          return;
+        }
         if(seats.length < 1) {
           setSeats(data.seats);
           setAdmitted(data.admitted);
@@ -87,6 +94,7 @@ const Home: NextPage = () => {
     setBookingData({});
     setSeats([]);
     setAdmitted(false);
+    setNotFound(false);
     setIsFetching(false);
   }
 
@@ -124,12 +132,16 @@ const Home: NextPage = () => {
                   
                   {
                     !isAdmitted
-                    ? <div className="border-t w-full grid grid-cols-2">
-                      <button className="border-r p-4 border-box self-center" onClick={() => handleAdmit()}>Admit</button>
-                      <button onClick={() => clearQRData()}>Cancel</button>
-                    </div>
+                    ? notFound
+                      ? <div className="border-t w-full">
+                        <h1 className="text-2xl font-bold text-red-500 text-center">NOT FOUND</h1>
+                      </div>
+                      :<div className="border-t w-full grid grid-cols-2">
+                        <button className="border-r p-4 border-box self-center" onClick={() => handleAdmit()}>Admit</button>
+                        <button onClick={() => clearQRData()}>Cancel</button>
+                      </div>
                     : <div className="border-t w-full">
-                      <h1 className="text-2xl font-bold text-red-500">ALREADY ADMITTED</h1>
+                      <h1 className="text-2xl font-bold text-red-500 text-center">ALREADY ADMITTED</h1>
                     </div>
                   }
                </>

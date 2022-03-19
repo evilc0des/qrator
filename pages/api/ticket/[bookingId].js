@@ -13,7 +13,7 @@ handler.get(async (req, res) => {
         bookingId: { $eq: bookingId }
     });
     console.log(doc);
-    res.json(doc);
+    res.json(doc || {});
 });
 
 handler.post(async (req, res) => {
