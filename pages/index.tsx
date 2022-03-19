@@ -29,13 +29,15 @@ const Home: NextPage = () => {
 
   const handleQrCodeData = ({ data }: QrCodeResult) => {
     const dataArr = data.split(",");
-    const bookingId = (dataArr[0].split("-"))[0];
-    const bookingTime = `${dataArr[2]}, ${dataArr[3]}`
-    setBookingData({
-      id: bookingId,
-      time: bookingTime
-    });
-    if(!resultModalVisible) setResultModalVisible(true);
+    if(dataArr.length === 4) {
+      const bookingId = (dataArr[0].split("-"))[0];
+      const bookingTime = `${dataArr[2]}, ${dataArr[3]}`
+      setBookingData({
+        id: bookingId,
+        time: bookingTime
+      });
+      if(!resultModalVisible) setResultModalVisible(true);
+    }
   }
 
   useEffect(() => {
