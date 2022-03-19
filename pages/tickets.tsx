@@ -78,24 +78,26 @@ const Tickets: NextPage = () => {
     }
   }
 
-  const handleDelete = (id: string) => {
-    fetch(`/api/ticket/${id}`, {
-      method: 'DELETE',
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        setIsFetching(true);
-        fetch(`/api/ticket`, {
-          method: 'GET',
-        })
-          .then(response => response.json())
-          .then(data => {
-            console.log(data);
-            setTickets(data);
-            setIsFetching(false);
-          });
-      });
+  const handleDelete = (id?: string) => {
+    if(id) {
+      fetch(`/api/ticket/${id}`, {
+        method: 'DELETE',
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          setIsFetching(true);
+          fetch(`/api/ticket`, {
+            method: 'GET',
+          })
+            .then(response => response.json())
+            .then(data => {
+              console.log(data);
+              setTickets(data);
+              setIsFetching(false);
+            });
+        });
+    }
   }
 
   return (
