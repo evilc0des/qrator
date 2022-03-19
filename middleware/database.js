@@ -7,7 +7,6 @@ const client = new MongoClient(process.env.DB_STRING, {
 });
 
 async function database(req, res, next) {
-    console.log(client);
   await client.connect();
   req.dbClient = client;
   req.db = client.db('balakadb');

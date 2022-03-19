@@ -37,6 +37,7 @@ handler.put(async (req, res) => {
     let doc = await req.db.collection('ticket').insertOne({
         bookingId: body.bookingId,
         seats: body.seats,
+        time: body.time,
         admitted: false
     });
     console.log(doc);
