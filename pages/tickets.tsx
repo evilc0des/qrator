@@ -31,14 +31,15 @@ const Tickets: NextPage = () => {
       });
   }, [])
 
-  const handleNewBookingChange = (label, value) => {
+  const handleNewBookingChange = (label, event) => {
     setNewTicket({
       ...newTicket,
-      [label]: value
+      [label]: event.target.value
     });
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
     if(newTicket.bookingId && newTicket.seats) {
       fetch(`/api/ticket/${newTicket.bookingId}`, {
         method: 'PUT',
@@ -51,7 +52,17 @@ const Tickets: NextPage = () => {
         .then(response => response.json())
         .then(data => {
           console.log(data);
-          setTickets([...tickets, data]);
+          if(data.acknowledged) {
+            setNewTicket({});
+          }
+          fetch(`/api/ticket`, {
+            method: 'GET',
+          })
+            .then(response => response.json())
+            .then(data => {
+              console.log(data);
+              setTickets(data);
+            });
         });
     }
   }
@@ -76,7 +87,7 @@ const Tickets: NextPage = () => {
             <td className="border-r text-center">{t.bookingId}</td>
             <td className="border-r text-center">{t.seats.join(", ")}</td>
             <td className="border-r text-center">{t.time}</td>
-            <td className="border-r text-center">{t.admitted}</td>
+            <td className={`border-r text-center ${t.admitted ? "text-green-500": "text-red-500"}`}>{t.admitted ? 'YES' : 'NO'}</td>
           </tr>
           )}
         </table>
